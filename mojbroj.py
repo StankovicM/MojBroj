@@ -1,4 +1,5 @@
 import random
+import time
 
 s_brojevi = (10, 15, 20)
 v_brojevi = (25, 50, 75, 100)
@@ -24,10 +25,9 @@ def izracunaj_postfiks(izraz):
             elif el == '*':
                 s.append(x * y)
             else:
-                # Dodati proveru za deljenje nulom i izmeniti postfiksni izraz na mestu i
-                try:
+                if y != 0 and x % y == 0:
                     s.append(x // y)
-                except ZeroDivisionError:
+                else:
                     return (9*9*9*9*20*100 + i)
 
         i += 1
@@ -230,6 +230,7 @@ class Populacija():
         self.cilj = cilj
         self.hromozomi = [Hromozom(self.brojevi, self.cilj) for _ in range(velicina)]
         self.najbolji = min(self.hromozomi, key=lambda h: h.fitnes).kopija()
+        self.najbolji_fitnesi = []
         self.izracunaj()
 
     def izracunaj(self):
@@ -243,6 +244,7 @@ class Populacija():
     def selekcija(self):
         self.hromozomi.sort(key=lambda h: h.fitnes)
         self.hromozomi = self.hromozomi[:self.velicina // 2]
+        self.najbolji_fitnesi.append(self.hromozomi[0].fitnes)
         return
 
     def mutiraj(self):
@@ -274,6 +276,7 @@ if __name__ == '__main__':
 
     p = Populacija(500, brojevi, cilj)
     i = 0
+    s = time.time()
     for i in range(500):
         if p.najbolji.fitnes == 0:
             break
@@ -305,4 +308,4 @@ if __name__ == '__main__':
             print(f'Generacija {i + 1} - Najbolje resenje: {p.najbolji}.')
 
     p.najbolji.izracunaj()
-    print(f'Najbolje resenje nadjeno nakon {i + 1} generacija: {p.najbolji}.')
+    print('Najbolje resenje nadjeno nakon {0} generacija: {1}. [{2:.3f}s].'.format(i + 1, p.najbolji, time.time() - s))
